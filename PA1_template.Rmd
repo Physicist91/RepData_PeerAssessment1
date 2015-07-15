@@ -1,18 +1,39 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "Kevin Siswandi"
+date: "14 July 2015"
 output: 
   html_document:
     keep_md: true
+    
 ---
 
+# Title to be decided
 
 ## Loading and preprocessing the data
 
+Let's load the data.
 
+```{r}
+activity <- read.csv("activity.csv")
+```
+
+A quick peek of the data:
+
+```{r}
+head(activity)
+summary(activity)
+```
+
+It looks like the data is already in a format suitable for analysis.
 
 ## What is mean total number of steps taken per day?
 
+First let's calculate the total number of steps for each day.
 
+```{r}
+sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
+```
 
 ## What is the average daily activity pattern?
 
