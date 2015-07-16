@@ -27,17 +27,20 @@ tail(activity)
 summary(activity)
 ```
 
-The interval variable is recorded in the format of hours followed by minutes. For example, 55 refers to 00:55 (zero hours and 55 minutes) and 100 refers to 01:00 (one hour and zero minutes). We'll preprocess this variable as needed in the subsequent sections.
+The interval variable is recorded in the format of hours followed by minutes. For example, 55 refers to 00:55 (zero hours and 55 minutes) and 100 refers to 01:00 (one hour and zero minutes). We'll preprocess this variable as needed in the subsequent sections.  
+
+
+
 
 ## What is mean total number of steps taken per day?
   
-First let's calculate the total number of steps for each day. There are missing values on some days, but let's ignore that for now.  
+First of all, let's calculate the total number of steps for each day. There are missing values on some days, but let's ignore that for now.  
 
 ```{r}
 steps_per_day <- sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
 ```
 
-steps_per_day contains the number of steps each day over the two months period. We can directly compute the mean and median and plot a histogram from this variable:  
+steps_per_day contains the total number of steps each day over the two months period. We can directly compute the mean and median and plot a histogram from this variable:  
 
 ```{r histogram}
 steps_mean <- mean(steps_per_day, na.rm = TRUE); steps_mean
@@ -48,23 +51,41 @@ abline(v = steps_mean, col = "red", lwd = 2, lty = 2)
 abline(v = steps_median, col = "blue", lwd = 2)
 ```
 
-As we can see in the figure above, the mean and the median are very close together.
+As we can see in the figure above, the mean and the median are very close together.  
+
+
+
 
 ## What is the average daily activity pattern?
 
 In this section, we'll examine the average daily activity within the two months period.
 
-``{r}
+```{r}
 #Split activity by interval
 s <- split(activity, activity$interval) 
 
 #Take the daily average of steps for each interval
 daily_average <- sapply(s, function(x) (mean(x[,1], na.rm = TRUE)))
 
-interval <- strptime(sprintf("%04s", names(daily_average)), format = "%H%M")
+#Convert the intervals to POSIXct time variables
+interval <- strptime(sprintf("%04d", unique(activity$interval)), format = "%H%M")
 
-plot(daily_average ~ interval, type = "l")
+#The interval with maximum number of steps
+which.max(daily_average)
+
+daily_average["835"]; daily_average[104]
 ```
+
+A time-series plot of the (daily average) number of steps taken:  
+
+```{r}
+plot(interval, daily_average, type = "l", ylab = "number of steps", main = "Daily average activity")
+```
+
+As evident from the plot, the maximum number of steps is around 08:35, which is consistent with our *which.max* result above.  
+
+
+
 
 ## Imputing missing values
 
