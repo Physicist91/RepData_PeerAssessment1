@@ -61,8 +61,9 @@ s <- split(activity, activity$interval)
 #Take the daily average of steps for each interval
 daily_average <- sapply(s, function(x) (mean(x[,1], na.rm = TRUE)))
 
-strptime(sprintf("%04d", 2355), format = "%H%M")
+interval <- strptime(sprintf("%04s", names(daily_average)), format = "%H%M")
 
+plot(daily_average ~ interval, type = "l")
 ```
 
 ## Imputing missing values
