@@ -11,33 +11,59 @@ output:
 # Title to be decided
 
 ## Loading and preprocessing the data
+  
+The dataset (activity.csv) is included in this repository and can be downloaded from  
+https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip  
 
-Let's load the data.
+In this section, we load and take a quick peek at the data.  
 
 ```{r}
 activity <- read.csv("activity.csv")
 ```
 
-A quick peek of the data:
-
 ```{r}
 head(activity)
+tail(activity)
 summary(activity)
 ```
 
-It looks like the data is already in a format suitable for analysis.
+The interval variable is recorded in the format of hours followed by minutes. For example, 55 refers to 00:55 (zero hours and 55 minutes) and 100 refers to 01:00 (one hour and zero minutes). We'll preprocess this variable as needed in the subsequent sections.
 
 ## What is mean total number of steps taken per day?
-
-First let's calculate the total number of steps for each day.
+  
+First let's calculate the total number of steps for each day. There are missing values on some days, but let's ignore that for now.  
 
 ```{r}
-sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
+steps_per_day <- sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
 ```
+
+steps_per_day contains the number of steps each day over the two months period. We can directly compute the mean and median and plot a histogram from this variable:  
+
+```{r histogram}
+steps_mean <- mean(steps_per_day, na.rm = TRUE); steps_mean
+steps_median <- median(steps_per_day, na.rm = TRUE); steps_median
+
+hist(steps_per_day, main = "Number of steps", breaks = 10, col = "green")
+abline(v = steps_mean, col = "red", lwd = 2, lty = 2)
+abline(v = steps_median, col = "blue", lwd = 2)
+```
+
+As we can see in the figure above, the mean and the median are very close together.
 
 ## What is the average daily activity pattern?
 
+In this section, we'll examine the average daily activity within the two months period.
 
+``{r}
+#Split activity by interval
+s <- split(activity, activity$interval) 
+
+#Take the daily average of steps for each interval
+daily_average <- sapply(s, function(x) (mean(x[,1], na.rm = TRUE)))
+
+strptime(sprintf("%04d", 2355), format = "%H%M")
+
+```
 
 ## Imputing missing values
 
