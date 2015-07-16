@@ -58,7 +58,7 @@ As we can see in the figure above, the mean and the median are very close togeth
 
 ## What is the average daily activity pattern?
 
-In this section, we'll examine the average daily activity within the two months period.
+In this section, we examine the average daily activity within the two months period.
 
 ```{r}
 #Split activity by interval
@@ -69,8 +69,10 @@ daily_average <- sapply(s, function(x) (mean(x[,1], na.rm = TRUE)))
 
 #Convert the intervals to POSIXct time variables
 interval <- strptime(sprintf("%04d", unique(activity$interval)), format = "%H%M")
+```
 
-#The interval with maximum number of steps
+The interval with maximum number of steps:
+```{r}
 which.max(daily_average)
 
 daily_average["835"]; daily_average[104]
@@ -89,6 +91,12 @@ As evident from the plot, the maximum number of steps is around 08:35, which is 
 
 ## Imputing missing values
 
+We'll now deal with the missing values as they may introduce bias into our summaries. Let's take a look again at the summary
 
+```{r}
+summary(activity)
+```
+
+There are `r sum(is.na(activity$steps))` missing values in the dataset. One reasonable strategy is to fill in every missing value with the mean for that 5-minute interval.
 
 ## Are there differences in activity patterns between weekdays and weekends?
