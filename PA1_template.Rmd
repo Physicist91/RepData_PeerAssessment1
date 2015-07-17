@@ -27,7 +27,7 @@ tail(activity)
 summary(activity)
 ```
 
-The interval variable is recorded in the format of hours followed by minutes. For example, 55 refers to 00:55 (zero hours and 55 minutes) and 100 refers to 01:00 (one hour and zero minutes). We'll preprocess this variable as needed in the subsequent sections.  
+The *interval* variable is recorded in the format of hours followed by minutes. For example, 55 refers to 00:55 (zero hours and 55 minutes) and 100 refers to 01:00 (one hour and zero minutes). We'll preprocess this variable as needed in the subsequent sections.  
 
 
 
@@ -40,7 +40,7 @@ First of all, let's calculate the total number of steps for each day. There are 
 steps_per_day <- sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
 ```
 
-steps_per_day contains the total number of steps each day over the two months period. We can directly compute the mean and median and plot a histogram from this variable:  
+*steps_per_day* contains the total number of steps each day over the two months period. From this variable, we can directly compute the mean and median and plot a histogram:  
 
 ```{r histogram}
 steps_mean <- mean(steps_per_day, na.rm = TRUE); steps_mean
@@ -71,14 +71,15 @@ daily_average <- sapply(s, function(x) (mean(x[,1], na.rm = TRUE)))
 interval <- strptime(sprintf("%04d", unique(activity$interval)), format = "%H%M")
 ```
 
-The interval with maximum number of steps:
-```{r}
-which.max(daily_average)
+The object *daily_average* contains the daily average activity pattern for each interval. The interval with maximum number of steps:
 
-daily_average["835"]; daily_average[104]
+```{r}
+max_step <- which.max(daily_average)
+
+daily_average[max_step]
 ```
 
-A time-series plot of the (daily average) number of steps taken:  
+The maximum number of steps happens at `r names(max_step)` and has the value of `r daily_average[max_step]`. Here's a time-series plot of the (daily average) number of steps taken at each interval:  
 
 ```{r}
 plot(interval, daily_average, type = "l", ylab = "number of steps", main = "Daily average activity")
@@ -91,12 +92,41 @@ As evident from the plot, the maximum number of steps is around 08:35, which is 
 
 ## Imputing missing values
 
-We'll now deal with the missing values as they may introduce bias into our summaries. Let's take a look again at the summary
+We'll now deal with the missing values as they may introduce bias into our calculations. Let's take a look again at the summary
 
 ```{r}
 summary(activity)
 ```
 
 There are `r sum(is.na(activity$steps))` missing values in the dataset. One reasonable strategy is to fill in every missing value with the mean for that 5-minute interval.
+
+```{r}
+#Filling in missing values with the daily average
+
+counter = 1;
+for (step in activity$steps) {
+ interval <- activity$interval[counter]
+  if(is.na(step)) {
+    step1 <- daily_average[as.character(interval)]
+    activity$steps[counter] <- step1
+  }
+  counter = counter + 1
+}
+```
+
+With the missing values filled in, we can then see what difference imputing the missing values can make to the daily total number of steps:
+
+```{r}
+imputed_steps_per_day <- sapply(split(activity, activity$date), function(x) (sum(x[, 1])))
+
+par(mfrow = c(1,2))
+hist(imputed_steps_per_day, main = "# of steps (after imputing NAs)", breaks = 10, col = "blue")
+hist(steps_per_day, main = "# of steps", breaks = 10, col = "green")
+
+steps_mean <- mean(imputed_steps_per_day); steps_mean
+steps_median <- median(imputed_steps_per_day); steps_median
+```
+
+Imputing the missing values with the mean for the respective interval does not change the shape of the distribution of the total number of steps per day, but rather it just ramps up the average, making the median equals the mean in the process.
 
 ## Are there differences in activity patterns between weekdays and weekends?
