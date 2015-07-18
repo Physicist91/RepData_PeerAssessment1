@@ -105,9 +105,9 @@ There are `r sum(is.na(activity$steps))` missing values in the dataset. One reas
 
 counter = 1;
 for (step in activity$steps) {
- interval <- activity$interval[counter]
+ five_min_inter <- activity$interval[counter]
   if(is.na(step)) {
-    step1 <- daily_average[as.character(interval)]
+    step1 <- daily_average[as.character(five_min_inter)]
     activity$steps[counter] <- step1
   }
   counter = counter + 1
@@ -130,3 +130,13 @@ steps_median <- median(imputed_steps_per_day); steps_median
 Imputing the missing values with the mean for the respective interval does not change the shape of the distribution of the total number of steps per day, but rather it just ramps up the average, making the median equals the mean in the process.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+In this section, we use the dataset with the missing values filled in.
+
+```{r}
+#New dataset with a factor variable indicating whether the date is a weekday/weekend
+activity$day <- weekdays(as.Date(activity$date))
+
+```
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data
