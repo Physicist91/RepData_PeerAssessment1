@@ -8,8 +8,6 @@ output:
     
 ---
 
-# Title to be decided
-
 ## Loading and preprocessing the data
   
 The dataset (activity.csv) is included in this repository and can be downloaded from  
@@ -135,8 +133,41 @@ In this section, we use the dataset with the missing values filled in.
 
 ```{r}
 #New dataset with a factor variable indicating whether the date is a weekday/weekend
+Sys.setlocale("LC_TIME", "en_US.UTF-8")
 activity$day <- weekdays(as.Date(activity$date))
+
+
+week_days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+week_end <- c("Saturday", "Sunday")
+
+
+##Subset weekdays and do the same as before
+activity_weekdays <- subset(activity, day %in% week_days)
+
+s_weekdays <- split(activity_weekdays, activity_weekdays$interval) 
+
+daily_average_weekdays <- sapply(s_weekdays, function(x) (mean(x[,1], na.rm = TRUE)))
+
+interval_weekdays <- strptime(sprintf("%04d", unique(activity_weekdays$interval)), format = "%H%M")
+
+
+
+#Subset weekends and do the same as before
+activity_weekend <- subset(activity, day %in% week_end)
+
+s_weekend <- split(activity_weekend, activity_weekend$interval) 
+
+daily_average_weekend <- sapply(s_weekend, function(x) (mean(x[,1], na.rm = TRUE)))
+
+interval_weekend <- strptime(sprintf("%04d", unique(activity_weekend$interval)), format = "%H%M")
+
+
+#Plotting the data
+par(mfcol = c(2, 1))
+plot(interval_weekdays, daily_average_weekdays, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekdays")
+
+plot(interval_weekend, daily_average_weekend, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekend")
 
 ```
 
-Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data
+There's quite a pronounced difference in activity levels on weekdays vs on weekends: On average, the number of steps seem to be higher in the weekends!
