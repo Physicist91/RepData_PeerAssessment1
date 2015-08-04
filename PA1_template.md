@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 Kevin Siswandi  
-14 July 2015  
+4 August 2015  
 
 ## Loading and preprocessing the data
   
@@ -260,10 +260,11 @@ interval_weekend <- strptime(sprintf("%04d", unique(activity_weekend$interval)),
 
 
 #Plotting the data
-par(mfcol = c(2, 1))
-plot(interval_weekdays, daily_average_weekdays, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekdays")
+rng <- range(daily_average_weekdays, daily_average_weekend)
+par(mfrow = c(1, 2))
+plot(interval_weekdays, daily_average_weekdays, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekdays", ylim = rng)
 
-plot(interval_weekend, daily_average_weekend, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekend")
+plot(interval_weekend, daily_average_weekend, type = "l", xlab = "interval", ylab = "number of steps", main = "Weekend", ylim = rng)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
